@@ -1,0 +1,99 @@
+.tree-container {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    padding: 20px;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+}
+
+.tree-node {
+    margin-bottom: 8px;
+    background-color: white;
+    border-radius: 6px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    transition: box-shadow 0.2s;
+}
+
+.tree-node:hover {
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+}
+
+.video-node {
+    border-left: 4px solid #4285f4;
+}
+
+.chapter-node {
+    border-left: 4px solid #34a853;
+}
+
+.segment-node {
+    border-left: 4px solid #9aa0a6;
+}
+
+.node-header {
+    display: flex;
+    align-items: center;
+    padding: 12px 16px;
+    cursor: pointer;
+    user-select: none;
+    transition: background-color 0.2s;
+}
+
+.node-header:hover {
+    background-color: #f1f3f4;
+}
+
+.toggle-icon {
+    font-size: 12px;
+    margin-right: 8px;
+    color: #5f6368;
+    transition: transform 0.2s;
+    min-width: 16px;
+}
+
+.toggle-icon-spacer {
+    width: 16px;
+    margin-right: 8px;
+}
+
+.node-icon {
+    font-size: 18px;
+    margin-right: 8px;
+}
+
+.node-title {
+    font-weight: 600;
+    font-size: 15px;
+    color: #202124;
+    flex: 1;
+}
+
+.time-badge {
+    background-color: #e8f0fe;
+    color: #1967d2;
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+.node-content {
+    padding: 0 16px 12px 44px;
+    color: #5f6368;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.node-description {
+    margin: 0;
+    padding-top: 8px;
+}
+
+.node-children {
+    margin-top: 4px;
+    padding-left: 0;
+}
+
+.node-children.collapsed {
+    display: none;
+}

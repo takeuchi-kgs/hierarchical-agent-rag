@@ -1,0 +1,44 @@
+version: '3'
+
+tasks:
+  default:
+    desc: Lists all available tasks
+    cmds:
+      - task -l
+
+  adk-web:
+    desc: Start the ADK Web UI
+    cmds:
+      - uv run adk web agents --reload_agents --session_service_uri sqlite:///./sessions.db
+
+  streamlit:run:
+    desc: Run the Streamlit app
+    cmds:
+      - uv run streamlit run app.py
+
+
+  # =============================================================================
+  # Quality Checks
+  # =============================================================================
+  
+  format:
+    desc: Formats code with ruff
+    cmds:
+      - uv run ruff format .
+
+  lint:
+    desc: Lints code with ruff (auto-fix enabled)
+    cmds:
+      - uv run ruff check . --fix
+
+  typecheck:
+    desc: Runs type checking with ty and zuban
+    cmds:
+      - uvx ty check
+
+  check:
+    desc: Runs all quality checks (format, lint, typecheck)
+    cmds:
+      - task: format
+      - task: lint
+      - task: typecheck
