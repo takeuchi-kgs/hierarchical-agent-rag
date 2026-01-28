@@ -8,7 +8,7 @@ from video_index.models import VideoAnalysisResult
 
 load_dotenv()
 
-client = genai.Client(http_options=types.HttpOptions(api_version="v1"))
+client = genai.Client(http_options=types.HttpOptions(api_version="v1beta"))
 
 VIDEO_TREE_INDEXER_PROMPT = """
 あなたは熟練した**動画コンテンツアナリスト**です。
@@ -53,7 +53,6 @@ def index_video(video_bytes: bytes) -> VideoAnalysisResult:
                 types.Part(
                     inline_data=types.Blob(
                         data=video_bytes,
-                        display_name="uploaded_video",
                         mime_type="video/mp4",
                     )
                 ),
