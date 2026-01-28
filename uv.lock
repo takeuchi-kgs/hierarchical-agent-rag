@@ -2591,6 +2591,7 @@ version = "0.1.0"
 source = { virtual = "." }
 dependencies = [
     { name = "google-adk" },
+    { name = "httpx" },
     { name = "streamlit" },
 ]
 
@@ -2603,6 +2604,7 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "google-adk", specifier = ">=1.23.0" },
+    { name = "httpx", specifier = ">=0.27.0" },
     { name = "streamlit", specifier = ">=1.51.0" },
 ]
 

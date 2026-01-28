@@ -1,4 +1,5 @@
 import asyncio
+import os
 
 import streamlit as st
 from google.adk.runners import InMemoryRunner
@@ -6,6 +7,7 @@ from google.genai import types
 
 from video_index.agent import call_agent_async
 from video_index.indexer import index_video
+from video_index.indexer_ollama import index_video_ollama
 from video_index.ui import render_chat_interface, render_video_tree
 
 APP_NAME = "sample_adk_app"
@@ -15,6 +17,36 @@ SESSION_ID = "session_1"
 st.set_page_config(page_title="動画インデックス & AI対話", layout="wide")
 
 st.title("動画インデックス & AI対話")
+
+# サイドバーでモデル選択
+with st.sidebar:
+    st.header("設定")
+    use_ollama = st.toggle(
+        "Ollama (qwen3-vl) を使用",
+        value=False,
+        help="ONにするとローカルのOllamaを使用します。OFFの場合はGemini APIを使用します。",
+    )
+
+    if use_ollama:
+        st.info("🦙 Ollama モード: qwen3-vl:4b を使用")
+        frame_interval = st.slider(
+            "フレーム抽出間隔（秒）",
+            min_value=5,
+            max_value=30,
+            value=10,
+            help="動画から何秒ごとにフレームを抽出するか",
+        )
+        max_frames = st.slider(
+            "最大フレーム数",
+            min_value=5,
+            max_value=50,
+            value=30,
+            help="抽出するフレームの最大数",
+        )
+    else:
+        st.info("✨ Gemini モード: gemini-2.5-flash を使用")
+        frame_interval = 10
+        max_frames = 30
 
 
 # ヘルパー関数
@@ -110,11 +142,36 @@ if video_file is None:
     )
 else:
     # インデックス化とセッション初期化（1回のみ）
-    if "indexed_video" not in st.session_state:
-        with st.spinner("動画をインデックス化中...", show_time=True):
-            video_bytes = video_file.read()
-            st.session_state["indexed_video"] = index_video(video_bytes=video_bytes)
-            st.session_state["video_bytes"] = video_bytes
+    # モード変更時に再インデックス化するためのキー
+    mode_key = "ollama" if use_ollama else "gemini"
+    if "indexed_video" not in st.session_state or st.session_state.get("mode_key") != mode_key:
+        video_bytes = video_file.read()
+
+        if use_ollama:
+            # Ollamaモードはプログレスバーで進捗表示
+            progress_bar = st.progress(0, text="動画をインデックス化中...")
+            status_text = st.empty()
+
+            def update_progress(current: int, total: int, message: str) -> None:
+                progress = current / total if total > 0 else 0
+                progress_bar.progress(progress, text=message)
+                status_text.text(f"進捗: {current}/{total}")
+
+            st.session_state["indexed_video"] = index_video_ollama(
+                video_bytes=video_bytes,
+                interval_seconds=frame_interval,
+                max_frames=max_frames,
+                progress_callback=update_progress,
+            )
+            progress_bar.progress(1.0, text="完了!")
+            status_text.empty()
+        else:
+            # Geminiモードはスピナーのみ
+            with st.spinner("動画をインデックス化中...", show_time=True):
+                st.session_state["indexed_video"] = index_video(video_bytes=video_bytes)
+
+        st.session_state["video_bytes"] = video_bytes
+        st.session_state["mode_key"] = mode_key
 
         # エージェント初期化とウォームアップ
         with st.spinner("AIエージェントを準備中...", show_time=True):
